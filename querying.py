@@ -11,23 +11,14 @@ class URLList(BaseModel):
     urls: List[str] = None
 
 @app.post("/run_extraction")
-async def run_extraction(urls: URLList = None):
-    # Check if URLs are passed in the request
-    if urls and urls.urls:
-        # If URLs are passed, save them to a JSON file
-        with open('urls.json', 'w') as f:
-            json.dump(urls.dict(), f)
-    else:
-        # If URLs are not passed, read the URLs from the JSON file
-        if os.path.isfile('urls.json') and os.path.getsize('urls.json') > 0:
-            with open('urls.json', 'r') as f:
-                data = json.load(f)
-                urls = data.get('urls', [])
-        else:
-            raise HTTPException(status_code=400, detail="URLs are required")
-
+async def run_extraction():
     BeautifulSoupWebReader = download_loader("BeautifulSoupWebReader")
     loader = BeautifulSoupWebReader()
+
+    # Read the URLs from the JSON file
+    with open('output.json', 'r') as f:
+        data = json.load(f)
+        urls = [item['URL'] for item in data]
 
     documents = loader.load_data(urls=urls)
     index = GPTVectorStoreIndex.from_documents(documents)
