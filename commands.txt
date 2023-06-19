@@ -1,0 +1,4 @@
+scrapy crawl url_spider -o output.json
+export OPENAI_API_KEY='your-api-key-here'
+pip install fastapi uvicorn scrapy scrapy-selenium
+uvicorn api:app --reload
